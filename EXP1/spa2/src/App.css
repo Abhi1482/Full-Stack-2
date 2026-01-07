@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  background: #000;
+  color: #fff;
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+div {
+  text-align: center;
+}
+
+input {
+  width: 240px;
+  padding: 6px;
+  background: #000;
+  color: #fff;
+  border: 1px solid #777; 
+  outline: none;
+}
+
+button {
+  background: #000;
+  color: #fff;
+  border: 1px solid #777;
+  margin-left: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+ul {
+  padding-left: 0;
+  list-style: none;
+  margin-top: 20px;
+}
+
+li {
+  margin: 6px 0;
+}
