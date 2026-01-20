@@ -1,0 +1,29 @@
+/* App-specific styles */
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Prevent text selection during drag */
+.app-layout * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+
+/* Allow text selection in input fields */
+.app-layout input,
+.app-layout textarea {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+}
