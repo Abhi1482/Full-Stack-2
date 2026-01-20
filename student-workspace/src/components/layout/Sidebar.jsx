@@ -1,8 +1,8 @@
 import React from 'react';
+import { Drawer, Box, Typography, Divider, List, ListItem, Alert } from '@mui/material';
+import { Info } from 'lucide-react';
 import ComponentBlock from '../blocks/ComponentBlock';
 import { ItemTypes, getTypeLabel } from '../../utils/constants';
-import { Layers, Info } from 'lucide-react';
-import './Sidebar.css';
 
 const Sidebar = ({ currentContext }) => {
     // Template components to drag from
@@ -32,64 +32,153 @@ const Sidebar = ({ currentContext }) => {
     };
 
     return (
-        <div className="sidebar">
-            <div className="sidebar-header">
-                <Layers size={24} />
-                <h2>Components</h2>
-            </div>
+        <Drawer
+            variant="permanent"
+            sx={{
+                width: 280,
+                flexShrink: 0,
+                '& .MuiDrawer-paper': {
+                    width: 280,
+                    boxSizing: 'border-box',
+                    backgroundColor: 'rgb(30, 41, 59)',
+                    color: 'white',
+                    borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+                },
+            }}
+        >
+            {/* Header */}
+            <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Box
+                    sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 2,
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '20px',
+                    }}
+                >
+                    C
+                </Box>
+                <Typography variant="h6" fontWeight={600} color="white">
+                    Components
+                </Typography>
+            </Box>
 
+            <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+
+            {/* Context Info */}
             {currentContext && (
-                <div className="sidebar-context">
-                    <Info size={14} />
-                    <span>Inside: {currentContext.title}</span>
-                </div>
+                <Alert
+                    icon={<Info size={16} />}
+                    severity="info"
+                    sx={{
+                        mx: 2,
+                        mt: 2,
+                        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                        color: '#A5B4FC',
+                        '& .MuiAlert-icon': {
+                            color: '#A5B4FC',
+                        },
+                    }}
+                >
+                    <Typography variant="caption" fontWeight={500}>
+                        Inside: {currentContext.title}
+                    </Typography>
+                </Alert>
             )}
 
-            <div className="sidebar-description">
-                <p>{getContextMessage()}</p>
-            </div>
+            {/* Description */}
+            <Box sx={{ px: 2.5, py: 2, backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
+                <Typography variant="caption" color="rgba(255, 255, 255, 0.6)" lineHeight={1.5}>
+                    {getContextMessage()}
+                </Typography>
+            </Box>
 
-            <div className="sidebar-content">
-                <div className="component-palette">
-                    <div className="palette-section">
-                        <h3 className="palette-section-title">Structure</h3>
-                        {templates.slice(0, 3).map(template => (
+            {/* Component Palette */}
+            <Box sx={{ flex: 1, overflowY: 'auto', px: 2.5, py: 2.5 }}>
+                {/* Structure */}
+                <Typography
+                    variant="caption"
+                    fontWeight={600}
+                    color="rgba(255, 255, 255, 0.5)"
+                    textTransform="uppercase"
+                    letterSpacing={0.5}
+                    display="block"
+                    mb={1.5}
+                >
+                    Structure
+                </Typography>
+                <List sx={{ p: 0 }}>
+                    {templates.slice(0, 3).map(template => (
+                        <ListItem key={template.id} sx={{ p: 0, mb: 1.5 }}>
                             <ComponentBlock
-                                key={template.id}
                                 component={template}
                                 isTemplate={true}
                             />
-                        ))}
-                    </div>
+                        </ListItem>
+                    ))}
+                </List>
 
-                    <div className="palette-section">
-                        <h3 className="palette-section-title">Content</h3>
-                        {templates.slice(3, 6).map(template => (
+                {/* Content */}
+                <Typography
+                    variant="caption"
+                    fontWeight={600}
+                    color="rgba(255, 255, 255, 0.5)"
+                    textTransform="uppercase"
+                    letterSpacing={0.5}
+                    display="block"
+                    mb={1.5}
+                    mt={3}
+                >
+                    Content
+                </Typography>
+                <List sx={{ p: 0 }}>
+                    {templates.slice(3, 6).map(template => (
+                        <ListItem key={template.id} sx={{ p: 0, mb: 1.5 }}>
                             <ComponentBlock
-                                key={template.id}
                                 component={template}
                                 isTemplate={true}
                             />
-                        ))}
-                    </div>
+                        </ListItem>
+                    ))}
+                </List>
 
-                    <div className="palette-section">
-                        <h3 className="palette-section-title">Tools</h3>
-                        {templates.slice(6).map(template => (
+                {/* Tools */}
+                <Typography
+                    variant="caption"
+                    fontWeight={600}
+                    color="rgba(255, 255, 255, 0.5)"
+                    textTransform="uppercase"
+                    letterSpacing={0.5}
+                    display="block"
+                    mb={1.5}
+                    mt={3}
+                >
+                    Tools
+                </Typography>
+                <List sx={{ p: 0 }}>
+                    {templates.slice(6).map(template => (
+                        <ListItem key={template.id} sx={{ p: 0, mb: 1.5 }}>
                             <ComponentBlock
-                                key={template.id}
                                 component={template}
                                 isTemplate={true}
                             />
-                        ))}
-                    </div>
-                </div>
-            </div>
+                        </ListItem>
+                    ))}
+                </List>
+            </Box>
 
-            <div className="sidebar-footer">
-                <p className="text-muted">Smart Student Workspace</p>
-            </div>
-        </div>
+            {/* Footer */}
+            <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
+            <Box sx={{ p: 2, textAlign: 'center' }}>
+                <Typography variant="caption" color="rgba(255, 255, 255, 0.4)">
+                    Smart Student Workspace
+                </Typography>
+            </Box>
+        </Drawer>
     );
 };
 

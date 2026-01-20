@@ -1,5 +1,5 @@
 import React from 'react';
-import './Card.css';
+import { Card as MuiCard, CardContent } from '@mui/material';
 
 const Card = ({
     children,
@@ -12,22 +12,28 @@ const Card = ({
     style = {}
 }) => {
     return (
-        <div
-            className={`
-        card 
-        ${hoverable ? 'hoverable' : ''} 
-        ${selected ? 'selected' : ''}
-        ${className}
-      `}
+        <MuiCard
+            className={className}
             onClick={onClick}
             onDoubleClick={onDoubleClick}
-            style={{
+            sx={{
+                borderLeft: color !== 'default' ? `4px solid ${color}` : '4px solid transparent',
+                cursor: hoverable ? 'pointer' : 'default',
+                transition: 'all 0.2s ease-in-out',
+                border: selected ? '2px solid' : 'none',
+                borderColor: selected ? 'primary.main' : 'transparent',
+                backgroundColor: selected ? 'action.selected' : 'background.paper',
+                '&:hover': hoverable ? {
+                    transform: 'translateY(-2px)',
+                    boxShadow: 4,
+                } : {},
                 ...style,
-                '--card-color': color !== 'default' ? color : 'var(--gray-300)',
             }}
         >
-            {children}
-        </div>
+            <CardContent sx={{ padding: 0, '&:last-child': { paddingBottom: 0 } }}>
+                {children}
+            </CardContent>
+        </MuiCard>
     );
 };
 

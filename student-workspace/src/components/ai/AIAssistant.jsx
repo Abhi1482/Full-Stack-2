@@ -1,103 +1,71 @@
 import React, { useState } from 'react';
-import { Send, Sparkles, Loader2 } from 'lucide-react';
-import './AIAssistant.css';
+import {
+    Paper,
+    Box,
+    Typography,
+    TextField,
+    IconButton,
+    List,
+    ListItem,
+    ListItemText,
+    CircularProgress,
+    InputAdornment,
+} from '@mui/material';
+import { Send, Bot, User } from 'lucide-react';
 
-const AIAssistant = ({ subjectTitle = 'this subject' }) => {
+const AIAssistant = ({ subjectTitle }) => {
     const [messages, setMessages] = useState([
         {
             id: 1,
-            role: 'assistant',
-            content: `Hi! I'm your AI assistant for ${subjectTitle}. I can help you with:
-      
-• Summarizing your notes
-• Generating practice questions
-• Explaining concepts in simple terms
-
-What would you like help with?`,
-            timestamp: new Date(),
-        }
+            role: 'ai',
+            content: `Hello! I'm your AI study assistant for ${subjectTitle}. How can I help you today?`,
+            timestamp: new Date().toISOString(),
+        },
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    // Mock AI responses
-    const generateResponse = (userMessage) => {
-        const lowerMessage = userMessage.toLowerCase();
-
-        if (lowerMessage.includes('summarize') || lowerMessage.includes('summary')) {
-            return `Here's a summary of your notes for ${subjectTitle}:
-
-📝 **Key Points:**
-• Main concepts have been organized into digestible sections
-• Important formulas and definitions are highlighted
-• Real-world applications are noted for better understanding
-
-💡 **Important to Remember:**
-Focus on understanding the core principles rather than memorization. The fundamental concepts in this subject build upon each other progressively.`;
-        }
-
-        if (lowerMessage.includes('question') || lowerMessage.includes('test') || lowerMessage.includes('quiz')) {
-            return `Here are some practice questions for ${subjectTitle}:
-
-❓ **Practice Questions:**
-
-1. What are the fundamental principles covered in this topic?
-2. How would you apply this concept to solve a real-world problem?
-3. Can you explain the relationship between the key concepts discussed?
-4. What are the common mistakes to avoid when working with this material?
-5. How does this topic connect to other subjects you're studying?
-
-Try answering these to test your understanding!`;
-        }
-
-        if (lowerMessage.includes('explain') || lowerMessage.includes('eli5') || lowerMessage.includes('simple')) {
-            return `Let me explain ${subjectTitle} in simple terms! 🌟
-
-Think of it like this: Imagine you're building with LEGO blocks. Each concept is like a different type of block, and understanding how they fit together helps you create something amazing.
-
-The basic idea is to break down complex topics into smaller, manageable pieces. Once you understand each piece, you can see how they all work together to form the bigger picture.
-
-Does this help? Would you like me to explain any specific part in more detail?`;
-        }
-
-        // Default response
-        return `I understand you're asking about "${userMessage}".
-
-Based on your notes in ${subjectTitle}, I'd recommend:
-
-1. **Review** the fundamental concepts first
-2. **Practice** with examples to reinforce understanding
-3. **Connect** new information to what you already know
-
-Is there a specific aspect you'd like me to help with? I can summarize notes, generate questions, or explain concepts in simpler terms.`;
-    };
-
     const handleSend = async () => {
-        if (!input.trim() || isLoading) return;
+        if (!input.trim()) return;
 
         const userMessage = {
             id: Date.now(),
             role: 'user',
-            content: input.trim(),
-            timestamp: new Date(),
+            content: input,
+            timestamp: new Date().toISOString(),
         };
 
-        setMessages(prev => [...prev, userMessage]);
+        setMessages([...messages, userMessage]);
         setInput('');
         setIsLoading(true);
 
-        // Simulate API delay
+        // Simulate AI response
         setTimeout(() => {
-            const aiResponse = {
+            const aiMessage = {
                 id: Date.now() + 1,
-                role: 'assistant',
-                content: generateResponse(input.trim()),
-                timestamp: new Date(),
+                role: 'ai',
+                content: generateMockResponse(input, subjectTitle),
+                timestamp: new Date().toISOString(),
             };
-
-            setMessages(prev => [...prev, aiResponse]);
+            setMessages(prev => [...prev, aiMessage]);
             setIsLoading(false);
         }, 1500);
+    };
+
+    const generateMockResponse = (query, subject) => {
+        const responses = {
+            default: `Based on ${subject}, here's what I found:\n\n• Key concept analysis\n• Related topics to explore\n• Study recommendations\n\nWould you like me to elaborate on any of these points?`,
+            explain: `Let me explain ${subject} concepts:\n\n1. **Core Principles**: Understanding the fundamentals\n2. **Applications**: How it's used in practice\n3. **Common Pitfalls**: What to watch out for\n\nNeed more details on any specific aspect?`,
+            summarize: `Here's a summary of ${subject}:\n\n**Main Points:**\n- Foundation concepts\n- Key methodologies\n- Practical applications\n\n**Recommended Focus Areas:**\n- Practice problems\n- Real-world examples`,
+        };
+
+        const lowerQuery = query.toLowerCase();
+        if (lowerQuery.includes('explain') || lowerQuery.includes('what is')) {
+            return responses.explain;
+        } else if (lowerQuery.includes('summarize') || lowerQuery.includes('summary')) {
+            return responses.summarize;
+        }
+        return responses.default;
     };
 
     const handleKeyPress = (e) => {
@@ -107,82 +75,131 @@ Is there a specific aspect you'd like me to help with? I can summarize notes, ge
         }
     };
 
-    const quickActions = [
-        { label: '📝 Summarize Notes', action: 'Please summarize my notes' },
-        { label: '❓ Generate Questions', action: 'Generate practice questions' },
-        { label: '💡 Explain Simply', action: 'Explain this like I\'m 5' },
-    ];
-
     return (
-        <div className="ai-assistant">
-            <div className="ai-header">
-                <Sparkles size={20} className="ai-icon" />
-                <h3>AI Assistant</h3>
-            </div>
-
-            <div className="ai-messages">
-                {messages.map((message) => (
-                    <div
-                        key={message.id}
-                        className={`ai-message ${message.role}`}
+        <Paper
+            elevation={2}
+            sx={{
+                height: 500,
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+            }}
+        >
+            {/* Header */}
+            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', backgroundColor: 'primary.main' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box
+                        sx={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: '50%',
+                            backgroundColor: 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'primary.main',
+                        }}
                     >
-                        <div className="message-content">
-                            {message.content.split('\n').map((line, i) => (
-                                <p key={i}>{line}</p>
-                            ))}
-                        </div>
-                        <div className="message-time">
-                            {message.timestamp.toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })}
-                        </div>
-                    </div>
-                ))}
+                        <Bot size={24} />
+                    </Box>
+                    <Box>
+                        <Typography variant="subtitle1" fontWeight={600} color="white">
+                            AI Study Assistant
+                        </Typography>
+                        <Typography variant="caption" color="rgba(255, 255, 255, 0.8)">
+                            for {subjectTitle}
+                        </Typography>
+                    </Box>
+                </Box>
+            </Box>
 
-                {isLoading && (
-                    <div className="ai-message assistant loading">
-                        <div className="message-content">
-                            <Loader2 size={20} className="spinner" />
-                            <span>Thinking...</span>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {messages.length === 1 && (
-                <div className="quick-actions">
-                    {quickActions.map((qa, index) => (
-                        <button
-                            key={index}
-                            className="quick-action-btn"
-                            onClick={() => setInput(qa.action)}
+            {/* Messages */}
+            <Box sx={{ flex: 1, overflowY: 'auto', p: 2, backgroundColor: 'grey.50' }}>
+                <List>
+                    {messages.map((message) => (
+                        <ListItem
+                            key={message.id}
+                            sx={{
+                                flexDirection: 'column',
+                                alignItems: message.role === 'user' ? 'flex-end' : 'flex-start',
+                                p: 0,
+                                mb: 2,
+                            }}
                         >
-                            {qa.label}
-                        </button>
+                            <Box
+                                sx={{
+                                    maxWidth: '80%',
+                                    p: 1.5,
+                                    borderRadius: 2,
+                                    backgroundColor: message.role === 'user' ? 'primary.main' : 'white',
+                                    color: message.role === 'user' ? 'white' : 'text.primary',
+                                    boxShadow: 1,
+                                }}
+                            >
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                                    {message.role === 'ai' ? <Bot size={16} /> : <User size={16} />}
+                                    <Typography variant="caption" fontWeight={600}>
+                                        {message.role === 'ai' ? 'AI Assistant' : 'You'}
+                                    </Typography>
+                                </Box>
+                                <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                                    {message.content}
+                                </Typography>
+                            </Box>
+                        </ListItem>
                     ))}
-                </div>
-            )}
+                    {isLoading && (
+                        <ListItem sx={{ flexDirection: 'column', alignItems: 'flex-start', p: 0 }}>
+                            <Box
+                                sx={{
+                                    maxWidth: '80%',
+                                    p: 1.5,
+                                    borderRadius: 2,
+                                    backgroundColor: 'white',
+                                    boxShadow: 1,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                }}
+                            >
+                                <CircularProgress size={16} />
+                                <Typography variant="body2" color="text.secondary">
+                                    AI is thinking...
+                                </Typography>
+                            </Box>
+                        </ListItem>
+                    )}
+                </List>
+            </Box>
 
-            <div className="ai-input-container">
-                <input
-                    type="text"
-                    className="ai-input"
-                    placeholder="Ask me anything..."
+            {/* Input */}
+            <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+                <TextField
+                    fullWidth
+                    multiline
+                    maxRows={3}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    disabled={isLoading}
+                    placeholder="Ask a question..."
+                    size="small"
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    onClick={handleSend}
+                                    disabled={!input.trim() || isLoading}
+                                    color="primary"
+                                    edge="end"
+                                >
+                                    <Send size={20} />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
-                <button
-                    className="ai-send-btn"
-                    onClick={handleSend}
-                    disabled={!input.trim() || isLoading}
-                >
-                    <Send size={18} />
-                </button>
-            </div>
-        </div>
+            </Box>
+        </Paper>
     );
 };
 

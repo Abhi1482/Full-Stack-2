@@ -1,33 +1,31 @@
 import React from 'react';
-import './EmptyState.css';
-import { ArrowDown, MousePointer2 } from 'lucide-react';
+import { Box, Typography, Button } from '@mui/material';
+import { FileText } from 'lucide-react';
 
 const EmptyState = () => {
     return (
-        <div className="empty-state">
-            <div className="empty-state-icon">
-                <MousePointer2 size={64} strokeWidth={1.5} />
-                <ArrowDown size={32} className="arrow-animation" />
-            </div>
-            <h2>Start Building Your Workspace</h2>
-            <p className="text-muted">
-                Drag components from the left sidebar to create your academic organization system
-            </p>
-            <div className="empty-state-hints">
-                <div className="hint">
-                    <span className="hint-number">1</span>
-                    <span>Add a Course to begin</span>
-                </div>
-                <div className="hint">
-                    <span className="hint-number">2</span>
-                    <span>Nest Parts and Subjects inside</span>
-                </div>
-                <div className="hint">
-                    <span className="hint-number">3</span>
-                    <span>Add Notes, Assignments, and Tests</span>
-                </div>
-            </div>
-        </div>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '400px',
+                textAlign: 'center',
+                color: 'text.secondary',
+            }}
+        >
+            <FileText size={64} style={{ marginBottom: '24px', opacity: 0.3 }} />
+            <Typography variant="h5" color="text.primary" gutterBottom fontWeight={600}>
+                Start Building Your Workspace
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 3, maxWidth: '400px' }}>
+                Drag a Course from the sidebar to begin organizing your academic materials
+            </Typography>
+            <Typography variant="body2" color="text.disabled">
+                💡 Tip: Double-click components to navigate into them
+            </Typography>
+        </Box>
     );
 };
 

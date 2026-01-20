@@ -1,4 +1,6 @@
-/* App-specific styles */
+/* Minimal custom styles - most styling now handled by MUI theme */
+
+/* App layout */
 .app-layout {
   display: flex;
   height: 100vh;
@@ -22,8 +24,18 @@
 
 /* Allow text selection in input fields */
 .app-layout input,
-.app-layout textarea {
+.app-layout textarea,
+.app-layout [contenteditable="true"] {
   user-select: text;
   -webkit-user-select: text;
   -moz-user-select: text;
+}
+
+/* Drag-and-drop cursor states */
+.app-layout [draggable="true"] {
+  cursor: grab;
+}
+
+.app-layout [draggable="true"]:active {
+  cursor: grabbing;
 }

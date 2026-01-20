@@ -1,9 +1,8 @@
 import React from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import Card from '../ui/Card';
+import { Card, CardContent, Box, Typography, Chip, Tooltip } from '@mui/material';
 import * as Icons from 'lucide-react';
 import { ItemTypes, canDrop, getTypeColor, getTypeIcon } from '../../utils/constants';
-import './ComponentBlock.css';
 
 const ComponentBlock = ({
     component,
@@ -41,7 +40,7 @@ const ComponentBlock = ({
             return canDrop(item.type, component.type);
         },
         drop: (item, monitor) => {
-            if (monitor.didDrop()) return; // Already handled by child
+            if (monitor.didDrop()) return;
             return { parentId: component.id, type: component.type };
         },
         collect: (monitor) => ({
@@ -50,25 +49,73 @@ const ComponentBlock = ({
         }),
     });
 
-    const handleClick = (e) => {
-        if (!isTemplate) {
-            e.stopPropagation();
+    // Add click delay to prevent single-click from interfering with double-click
+    const clickTimerRef = React.useRef(null);
+    const [clickCount, setClickCount] = React.useState(0);
 
-            // For Notes and Assignment with files, show file viewer instead of config
-            if (['notes', 'assignment'].includes(component.type) && component.metadata?.files?.length > 0) {
-                onViewFiles && onViewFiles(component);
-            } else {
-                onSelect && onSelect(component.id);
-            }
+    const handleClick = (e) => {
+        if (isTemplate) return;
+        e.stopPropagation();
+
+        // Increment click count
+        setClickCount(prev => prev + 1);
+
+        // Clear existing timer
+        if (clickTimerRef.current) {
+            clearTimeout(clickTimerRef.current);
         }
+
+        // Check if component can be drilled down
+        const canOpen = ['course', 'part', 'subject'].includes(component.type);
+
+        // Set a timer to handle single click
+        clickTimerRef.current = setTimeout(() => {
+            // Check if it was a single click (clickCount will be 1)
+            // For openable components, don't open config on single click - only on double click
+            if (!canOpen || clickCount === 1) {
+                // For Notes and Assignment with files, show file viewer instead of config
+                if (['notes', 'assignment'].includes(component.type) && component.metadata?.files?.length > 0) {
+                    onViewFiles && onViewFiles(component);
+                } else if (!canOpen) {
+                    // Only open config panel for non-openable components
+                    onSelect && onSelect(component.id);
+                }
+            }
+            setClickCount(0);
+        }, 250); // 250ms delay to detect double-click
     };
 
     const handleDoubleClick = (e) => {
-        if (!isTemplate && onDrillDown) {
-            e.stopPropagation();
+        if (isTemplate) return;
+        e.stopPropagation();
+
+        // Clear the single-click timer
+        if (clickTimerRef.current) {
+            clearTimeout(clickTimerRef.current);
+        }
+        setClickCount(0);
+
+        // Check if component can be drilled down
+        const canOpen = ['course', 'part', 'subject'].includes(component.type);
+
+        if (canOpen && onDrillDown) {
+            // Drill down into the component
             onDrillDown(component);
+        } else {
+            // For non-openable components, open config panel
+            onSelect && onSelect(component.id);
         }
     };
+
+    // Cleanup timer on unmount
+    React.useEffect(() => {
+        return () => {
+            if (clickTimerRef.current) {
+                clearTimeout(clickTimerRef.current);
+            }
+        };
+    }, []);
+
 
     // Combine refs for drag and drop
     const attachRefs = (el) => {
@@ -85,66 +132,140 @@ const ComponentBlock = ({
     const fileCount = component.metadata?.files?.length || 0;
 
     return (
-        <div
+        <Box
             ref={attachRefs}
-            className={`
-        component-block
-        ${isTemplate ? 'template' : 'instance'}
-        ${isDragging ? 'dragging' : ''}
-        ${isOver && canDropHere ? 'drop-target' : ''}
-        ${canOpen ? 'can-open' : ''}
-      `}
-            style={isTemplate ? {} : {
+            sx={{
                 opacity: isDragging ? 0.5 : 1,
+                cursor: isTemplate ? 'grab' : (canOpen ? 'pointer' : 'auto'),
+                marginBottom: isTemplate ? 1.5 : 0,
+                width: '100%',
+                position: 'relative',
             }}
         >
             <Card
-                color={color}
-                selected={selected}
-                hoverable={!isTemplate}
                 onClick={handleClick}
                 onDoubleClick={handleDoubleClick}
-                className="component-block-card"
+                sx={{
+                    borderLeft: `4px solid ${color}`,
+                    cursor: isTemplate ? 'grab' : 'pointer',
+                    backgroundColor: isTemplate ? 'rgba(30, 41, 59, 0.04)' : 'background.paper',
+                    border: isOver && canDropHere ? '2px solid' : (selected ? '2px solid' : 'none'),
+                    borderColor: isOver && canDropHere ? 'primary.main' : (selected ? 'primary.main' : 'transparent'),
+                    boxShadow: isOver && canDropHere ? 6 : (selected ? 4 : 1),
+                    transition: 'all 0.2s ease-in-out',
+                    minHeight: isTemplate ? 'auto' : 90,
+                    padding: isTemplate ? 1.5 : 2,
+                    '&:hover': canOpen ? {
+                        transform: 'translateY(-4px)',
+                        boxShadow: 8,
+                    } : {},
+                }}
             >
-                <div className="component-header">
-                    <div className="component-icon" style={{ color }}>
-                        {IconComponent && <IconComponent size={20} />}
-                    </div>
-                    <div className="component-info">
-                        <h4 className="component-title">{component.title}</h4>
-                        {component.metadata?.description && !isTemplate && (
-                            <p className="component-description">{component.metadata.description}</p>
-                        )}
-                        {canOpen && childCount > 0 && (
-                            <p className="component-hint">
-                                <Icons.ChevronRight size={14} />
-                                {childCount} item{childCount !== 1 ? 's' : ''} • Double-click to open
-                            </p>
-                        )}
-                        {canOpen && childCount === 0 && (
-                            <p className="component-hint-empty">Double-click to open</p>
-                        )}
-                        {['notes', 'assignment'].includes(component.type) && fileCount > 0 && (
-                            <p className="component-hint">
-                                <Icons.Paperclip size={14} />
-                                {fileCount} file{fileCount !== 1 ? 's' : ''} • Click to view
-                            </p>
-                        )}
-                    </div>
-                    {!isTemplate && childCount > 0 && (
-                        <div className="component-badge">
-                            {childCount}
-                        </div>
-                    )}
-                    {!isTemplate && fileCount > 0 && (
-                        <div className="component-badge file-badge" title={`${fileCount} files attached`}>
-                            <Icons.Paperclip size={14} />
-                            {fileCount}
-                        </div>
-                    )}
-                </div>
+                <CardContent sx={{ padding: 0, '&:last-child': { paddingBottom: 0 } }}>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                        {/* Icon */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: isTemplate ? 32 : 40,
+                                height: isTemplate ? 32 : 40,
+                                backgroundColor: `${color}15`,
+                                borderRadius: 1,
+                                flexShrink: 0,
+                                color: color,
+                            }}
+                        >
+                            {IconComponent && <IconComponent size={20} />}
+                        </Box>
+
+                        {/* Content */}
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Typography
+                                variant={isTemplate ? 'body2' : 'h6'}
+                                fontWeight={600}
+                                color={isTemplate ? 'text.secondary' : 'text.primary'}
+                                sx={{
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    mb: component.metadata?.description ? 0.5 : 0,
+                                }}
+                            >
+                                {component.title}
+                            </Typography>
+
+                            {component.metadata?.description && !isTemplate && (
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden',
+                                        lineHeight: 1.4,
+                                        mb: 1,
+                                    }}
+                                >
+                                    {component.metadata.description}
+                                </Typography>
+                            )}
+
+                            {/* Hints */}
+                            {canOpen && childCount > 0 && (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
+                                    <Icons.ChevronRight size={14} color={color} />
+                                    <Typography variant="caption" color="primary" fontWeight={500}>
+                                        {childCount} item{childCount !== 1 ? 's' : ''} • Double-click to open
+                                    </Typography>
+                                </Box>
+                            )}
+
+                            {canOpen && childCount === 0 && (
+                                <Typography variant="caption" color="text.disabled" fontStyle="italic" sx={{ mt: 0.75, display: 'block' }}>
+                                    Double-click to open
+                                </Typography>
+                            )}
+
+                            {['notes', 'assignment'].includes(component.type) && fileCount > 0 && (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
+                                    <Icons.Paperclip size={14} color={color} />
+                                    <Typography variant="caption" color="primary" fontWeight={500}>
+                                        {fileCount} file{fileCount !== 1 ? 's' : ''} • Click to view
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Box>
+
+                        {/* Badges */}
+                        <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
+                            {!isTemplate && childCount > 0 && (
+                                <Chip
+                                    label={childCount}
+                                    size="small"
+                                    color="primary"
+                                    sx={{ fontWeight: 600, height: 28 }}
+                                />
+                            )}
+
+                            {!isTemplate && fileCount > 0 && (
+                                <Tooltip title={`${fileCount} files attached`}>
+                                    <Chip
+                                        icon={<Icons.Paperclip size={14} />}
+                                        label={fileCount}
+                                        size="small"
+                                        color="success"
+                                        sx={{ fontWeight: 600, height: 28 }}
+                                    />
+                                </Tooltip>
+                            )}
+                        </Box>
+                    </Box>
+                </CardContent>
             </Card>
-        </div>
+        </Box>
     );
 };
 

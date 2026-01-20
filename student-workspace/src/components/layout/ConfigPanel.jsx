@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
+import {
+    Drawer,
+    Box,
+    Typography,
+    TextField,
+    Button,
+    IconButton,
+    Divider,
+    ToggleButton,
+    ToggleButtonGroup,
+    Stack,
+} from '@mui/material';
 import { X, Trash2, Calendar, Palette, Type, FileText } from 'lucide-react';
 import { format } from 'date-fns';
 import FileUpload from '../ui/FileUpload';
-import './ConfigPanel.css';
 
 const ConfigPanel = ({ component, onUpdate, onDelete, onClose }) => {
     const [title, setTitle] = useState(component?.title || '');
@@ -12,14 +23,7 @@ const ConfigPanel = ({ component, onUpdate, onDelete, onClose }) => {
     const [files, setFiles] = useState(component?.metadata?.files || []);
 
     if (!component) {
-        return (
-            <div className="config-panel empty">
-                <div className="empty-config">
-                    <FileText size={48} className="empty-icon" />
-                    <p>Select a component to configure</p>
-                </div>
-            </div>
-        );
+        return null;
     }
 
     const handleSave = () => {
@@ -71,143 +75,192 @@ const ConfigPanel = ({ component, onUpdate, onDelete, onClose }) => {
     const showFileUpload = component.type === 'notes' || component.type === 'assignment';
 
     return (
-        <div className="config-panel">
-            <div className="config-header">
-                <h3>Configure Component</h3>
-                <button className="close-btn" onClick={onClose}>
+        <Drawer
+            anchor="right"
+            open={true}
+            onClose={onClose}
+            sx={{
+                '& .MuiDrawer-paper': {
+                    width: 400,
+                    maxWidth: '90vw',
+                    backgroundColor: '#FFFFFF',        // Right panel background - exact spec
+                    borderLeft: '1px solid #E5E7EB', // Right panel border - exact spec
+                },
+            }}
+        >
+            {/* Header */}
+            <Box sx={{ p: 2.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: 1, borderColor: 'divider' }}>
+                <Typography variant="h6" fontWeight={600}>
+                    Configure Component
+                </Typography>
+                <IconButton onClick={onClose} size="small">
                     <X size={20} />
-                </button>
-            </div>
+                </IconButton>
+            </Box>
 
-            <div className="config-content">
-                {/* Title */}
-                <div className="config-field">
-                    <label>
-                        <Type size={16} />
-                        <span>Title</span>
-                    </label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        onBlur={handleSave}
-                        placeholder="Component title"
-                    />
-                </div>
-
-                {/* Description */}
-                <div className="config-field">
-                    <label>
-                        <FileText size={16} />
-                        <span>Description</span>
-                    </label>
-                    <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        onBlur={handleSave}
-                        placeholder="Add a description..."
-                        rows={4}
-                    />
-                </div>
-
-                {/* Due Date (for assignments and tests) */}
-                {showDatePicker && (
-                    <div className="config-field">
-                        <label>
-                            <Calendar size={16} />
-                            <span>Due Date</span>
-                        </label>
-                        <input
-                            type="date"
-                            value={dueDate}
-                            onChange={(e) => {
-                                setDueDate(e.target.value);
-                                handleSave();
-                            }}
+            {/* Content */}
+            <Box sx={{ flex: 1, overflowY: 'auto', p: 3 }}>
+                <Stack spacing={3}>
+                    {/* Title */}
+                    <Box>
+                        <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Type size={16} />
+                            Title
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            onBlur={handleSave}
+                            placeholder="Component title"
+                            size="small"
                         />
-                        {dueDate && (
-                            <p className="field-hint">
-                                Due: {format(new Date(dueDate), 'MMMM d, yyyy')}
-                            </p>
-                        )}
-                    </div>
-                )}
+                    </Box>
 
-                {/* File Upload (for notes and assignments) */}
-                {showFileUpload && (
-                    <div className="config-field">
-                        <label>
+                    {/* Description */}
+                    <Box>
+                        <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <FileText size={16} />
-                            <span>Attached Files</span>
-                        </label>
-                        <FileUpload
-                            files={files}
-                            onFilesChange={handleFilesChange}
-                            maxSize={10}
+                            Description
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            multiline
+                            rows={4}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            onBlur={handleSave}
+                            placeholder="Add a description..."
+                            size="small"
                         />
-                    </div>
-                )}
+                    </Box>
 
-                {/* Color */}
-                <div className="config-field">
-                    <label>
-                        <Palette size={16} />
-                        <span>Color Tag</span>
-                    </label>
-                    <div className="color-picker">
-                        {colorOptions.map((option) => (
-                            <button
-                                key={option.value}
-                                className={`color-option ${color === option.value ? 'active' : ''}`}
-                                style={{ backgroundColor: option.color }}
-                                onClick={() => {
-                                    setColor(option.value);
+                    {/* Due Date */}
+                    {showDatePicker && (
+                        <Box>
+                            <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Calendar size={16} />
+                                Due Date
+                            </Typography>
+                            <TextField
+                                fullWidth
+                                type="date"
+                                value={dueDate}
+                                onChange={(e) => {
+                                    setDueDate(e.target.value);
                                     handleSave();
                                 }}
-                                title={option.label}
+                                size="small"
+                                InputLabelProps={{ shrink: true }}
                             />
-                        ))}
-                    </div>
-                </div>
+                            {dueDate && (
+                                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                                    Due: {format(new Date(dueDate), 'MMMM d, yyyy')}
+                                </Typography>
+                            )}
+                        </Box>
+                    )}
 
-                {/* Component Info */}
-                <div className="config-info">
-                    <div className="info-row">
-                        <span className="info-label">Type:</span>
-                        <span className="info-value">{component.type}</span>
-                    </div>
-                    {component.children?.length > 0 && (
-                        <div className="info-row">
-                            <span className="info-label">Children:</span>
-                            <span className="info-value">{component.children.length}</span>
-                        </div>
+                    {/* File Upload */}
+                    {showFileUpload && (
+                        <Box>
+                            <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <FileText size={16} />
+                                Attached Files
+                            </Typography>
+                            <FileUpload
+                                files={files}
+                                onFilesChange={handleFilesChange}
+                                maxSize={10}
+                            />
+                        </Box>
                     )}
-                    {files.length > 0 && (
-                        <div className="info-row">
-                            <span className="info-label">Files:</span>
-                            <span className="info-value">{files.length}</span>
-                        </div>
-                    )}
-                    <div className="info-row">
-                        <span className="info-label">Created:</span>
-                        <span className="info-value">
-                            {component.metadata?.createdAt
-                                ? format(new Date(component.metadata.createdAt), 'MMM d, yyyy')
-                                : 'N/A'
-                            }
-                        </span>
-                    </div>
-                </div>
-            </div>
+
+                    {/* Color Tag */}
+                    <Box>
+                        <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Palette size={16} />
+                            Color Tag
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            {colorOptions.map((option) => (
+                                <Box
+                                    key={option.value}
+                                    onClick={() => {
+                                        setColor(option.value);
+                                        handleSave();
+                                    }}
+                                    sx={{
+                                        width: 36,
+                                        height: 36,
+                                        borderRadius: '50%',
+                                        backgroundColor: option.color,
+                                        cursor: 'pointer',
+                                        border: color === option.value ? '3px solid' : '3px solid transparent',
+                                        borderColor: color === option.value ? 'primary.main' : 'transparent',
+                                        transition: 'all 0.2s',
+                                        '&:hover': {
+                                            transform: 'scale(1.1)',
+                                            boxShadow: 2,
+                                        },
+                                    }}
+                                    title={option.label}
+                                />
+                            ))}
+                        </Box>
+                    </Box>
+
+                    <Divider />
+
+                    {/* Component Info */}
+                    <Box>
+                        <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+                            Component Information
+                        </Typography>
+                        <Stack spacing={1.5}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Typography variant="body2" color="text.secondary">Type:</Typography>
+                                <Typography variant="body2" fontWeight={500} textTransform="capitalize">{component.type}</Typography>
+                            </Box>
+                            {component.children?.length > 0 && (
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <Typography variant="body2" color="text.secondary">Children:</Typography>
+                                    <Typography variant="body2" fontWeight={500}>{component.children.length}</Typography>
+                                </Box>
+                            )}
+                            {files.length > 0 && (
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <Typography variant="body2" color="text.secondary">Files:</Typography>
+                                    <Typography variant="body2" fontWeight={500}>{files.length}</Typography>
+                                </Box>
+                            )}
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Typography variant="body2" color="text.secondary">Created:</Typography>
+                                <Typography variant="body2" fontWeight={500}>
+                                    {component.metadata?.createdAt
+                                        ? format(new Date(component.metadata.createdAt), 'MMM d, yyyy')
+                                        : 'N/A'
+                                    }
+                                </Typography>
+                            </Box>
+                        </Stack>
+                    </Box>
+                </Stack>
+            </Box>
 
             {/* Actions */}
-            <div className="config-actions">
-                <button className="delete-btn" onClick={handleDelete}>
-                    <Trash2 size={18} />
-                    <span>Delete Component</span>
-                </button>
-            </div>
-        </div>
+            <Box sx={{ p: 2.5, borderTop: 1, borderColor: 'divider' }}>
+                <Button
+                    fullWidth
+                    variant="outlined"
+                    color="error"
+                    startIcon={<Trash2 size={18} />}
+                    onClick={handleDelete}
+                >
+                    Delete Component
+                </Button>
+            </Box>
+        </Drawer>
     );
 };
 

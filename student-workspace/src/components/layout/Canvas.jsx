@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
+import { Box, Container, Grid, Typography } from '@mui/material';
 import ComponentBlock from '../blocks/ComponentBlock';
 import AIAssistant from '../ai/AIAssistant';
 import EmptyState from '../ui/EmptyState';
 import { ItemTypes, canDrop } from '../../utils/constants';
-import './Canvas.css';
 
 const Canvas = ({ components, currentContext, onDrop, onSelect, onViewFiles, onDrillDown, selectedId }) => {
     const [{ isOver, canDropOnCanvas }, drop] = useDrop({
@@ -34,7 +34,7 @@ const Canvas = ({ components, currentContext, onDrop, onSelect, onViewFiles, onD
 
             // Handle drop in current context
             const offset = monitor.getClientOffset();
-            const canvasElement = document.querySelector('.canvas-content');
+            const canvasElement = document.querySelector('[data-canvas="true"]');
             const canvasRect = canvasElement.getBoundingClientRect();
 
             const position = {
@@ -61,13 +61,15 @@ const Canvas = ({ components, currentContext, onDrop, onSelect, onViewFiles, onD
         // Special rendering for AI component
         if (component.type === ItemTypes.AI) {
             return (
-                <div key={component.id} className="canvas-component ai-component">
-                    <AIAssistant
-                        subjectTitle={
-                            components.find(c => c.id === component.parentId)?.title || 'this subject'
-                        }
-                    />
-                </div>
+                <Grid item xs={12} sm={6} md={4} key={component.id}>
+                    <Box sx={{ height: '100%' }}>
+                        <AIAssistant
+                            subjectTitle={
+                                components.find(c => c.id === component.parentId)?.title || 'this subject'
+                            }
+                        />
+                    </Box>
+                </Grid>
             );
         }
 
@@ -75,16 +77,17 @@ const Canvas = ({ components, currentContext, onDrop, onSelect, onViewFiles, onD
         const childCount = components.filter(c => c.parentId === component.id).length;
 
         return (
-            <ComponentBlock
-                key={component.id}
-                component={{ ...component, metadata: { ...component.metadata, childCount } }}
-                isTemplate={false}
-                onSelect={onSelect}
-                onViewFiles={onViewFiles}
-                onDrillDown={onDrillDown}
-                selected={selectedId === component.id}
-                showChildrenCount={true}
-            />
+            <Grid item xs={12} sm={6} md={4} key={component.id}>
+                <ComponentBlock
+                    component={{ ...component, metadata: { ...component.metadata, childCount } }}
+                    isTemplate={false}
+                    onSelect={onSelect}
+                    onViewFiles={onViewFiles}
+                    onDrillDown={onDrillDown}
+                    selected={selectedId === component.id}
+                    showChildrenCount={true}
+                />
+            </Grid>
         );
     };
 
@@ -118,35 +121,69 @@ const Canvas = ({ components, currentContext, onDrop, onSelect, onViewFiles, onD
         return messages[contextComponent.type] || {};
     };
 
-    const emptyMessage = getEmptyStateMessage();
-
     return (
-        <div className="canvas" ref={drop}>
-            <div className={`canvas-content ${isOver && canDropOnCanvas ? 'drop-active' : ''}`}>
+        <Box
+            ref={drop}
+            data-canvas="true"
+            sx={{
+                flex: 1,
+                position: 'relative',
+                overflow: 'auto',
+                backgroundColor: '#F8FAFC', // Canvas background - exact spec
+                backgroundImage: `
+          linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px)
+        `, // Very subtle grid - exact spec
+                backgroundSize: '20px 20px',
+                transition: 'background-color 0.2s ease-in-out',
+                ...(isOver && canDropOnCanvas && {
+                    backgroundColor: 'rgba(99, 102, 241, 0.02)',
+                }),
+            }}
+        >
+            <Container maxWidth="xl" sx={{ py: 5, minHeight: '100%' }}>
                 {displayComponents.length === 0 ? (
-                    <div className="empty-state">
-                        <div className="empty-state-icon">
-                            <span className="empty-icon">📚</span>
-                        </div>
-                        <h2>{emptyMessage.title}</h2>
-                        <p className="text-muted">{emptyMessage.description}</p>
-                    </div>
+                    <EmptyState />
                 ) : (
-                    <div className="canvas-grid-layout">
+                    <Grid container spacing={3}>
                         {displayComponents.map(component => renderComponent(component))}
-                    </div>
+                    </Grid>
                 )}
 
                 {isOver && canDropOnCanvas && (
-                    <div className="drop-indicator">
+                    <Box
+                        sx={{
+                            position: 'fixed',
+                            bottom: 40,
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            px: 3,
+                            py: 1.5,
+                            backgroundColor: 'primary.main',
+                            color: 'white',
+                            borderRadius: 2,
+                            boxShadow: 8,
+                            fontWeight: 600,
+                            fontSize: '14px',
+                            pointerEvents: 'none',
+                            animation: 'slideIn 0.3s ease-in-out',
+                            '@keyframes slideIn': {
+                                from: {
+                                    opacity: 0,
+                                    transform: 'translateX(-50%) translateY(10px)',
+                                },
+                                to: {
+                                    opacity: 1,
+                                    transform: 'translateX(-50%) translateY(0)',
+                                },
+                            },
+                        }}
+                    >
                         Drop here to add component
-                    </div>
+                    </Box>
                 )}
-            </div>
-
-            {/* Grid pattern background */}
-            <div className="canvas-grid"></div>
-        </div>
+            </Container>
+        </Box>
     );
 };
 

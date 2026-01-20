@@ -1,6 +1,17 @@
 import React, { useState, useCallback } from 'react';
+import {
+    Box,
+    Paper,
+    Typography,
+    Button,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemSecondaryAction,
+    IconButton,
+    LinearProgress,
+} from '@mui/material';
 import { Upload, X, FileText, Image as ImageIcon, Download, Eye } from 'lucide-react';
-import './FileUpload.css';
 
 const FileUpload = ({ files = [], onFilesChange, maxSize = 10 }) => {
     const [isDragging, setIsDragging] = useState(false);
@@ -35,7 +46,7 @@ const FileUpload = ({ files = [], onFilesChange, maxSize = 10 }) => {
     const processFiles = async (fileList) => {
         const validFiles = fileList.filter(file => {
             const isValidType = file.type === 'application/pdf' || file.type.startsWith('image/');
-            const isValidSize = file.size <= maxSize * 1024 * 1024; // Convert MB to bytes
+            const isValidSize = file.size <= maxSize * 1024 * 1024;
 
             if (!isValidType) {
                 alert(`${file.name} is not a valid file type. Only PDFs and images are allowed.`);
@@ -50,7 +61,6 @@ const FileUpload = ({ files = [], onFilesChange, maxSize = 10 }) => {
             return true;
         });
 
-        // Convert files to base64 for storage
         const filePromises = validFiles.map(file => {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -74,9 +84,6 @@ const FileUpload = ({ files = [], onFilesChange, maxSize = 10 }) => {
 
     const handleRemoveFile = (fileId) => {
         onFilesChange(files.filter(f => f.id !== fileId));
-        if (previewFile?.id === fileId) {
-            setPreviewFile(null);
-        }
     };
 
     const handleDownload = (file) => {
@@ -93,103 +100,88 @@ const FileUpload = ({ files = [], onFilesChange, maxSize = 10 }) => {
     };
 
     return (
-        <div className="file-upload">
-            <div
-                className={`file-drop-zone ${isDragging ? 'dragging' : ''}`}
+        <Box>
+            <Paper
+                variant="outlined"
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
-                onClick={() => document.getElementById('file-input').click()}
+                onClick={() => document.getElementById('file-input-mui').click()}
+                sx={{
+                    p: 4,
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    borderStyle: 'dashed',
+                    borderWidth: 2,
+                    borderColor: isDragging ? 'primary.main' : 'divider',
+                    backgroundColor: isDragging ? 'action.hover' : 'background.paper',
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                        borderColor: 'primary.main',
+                        backgroundColor: 'action.hover',
+                    },
+                }}
             >
-                <Upload size={32} />
-                <p className="drop-text">Drop PDFs or images here</p>
-                <p className="drop-hint">or click to browse</p>
+                <Upload size={32} style={{ marginBottom: 12, opacity: 0.5 }} />
+                <Typography variant="body1" fontWeight={500} gutterBottom>
+                    Drop PDFs or images here
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                    or click to browse
+                </Typography>
                 <input
-                    id="file-input"
+                    id="file-input-mui"
                     type="file"
                     multiple
                     accept=".pdf,image/*"
                     onChange={handleFileInput}
                     style={{ display: 'none' }}
                 />
-            </div>
+            </Paper>
 
             {files.length > 0 && (
-                <div className="file-list">
-                    <h4 className="file-list-title">Uploaded Files ({files.length})</h4>
-                    {files.map(file => (
-                        <div key={file.id} className="file-item">
-                            <div className="file-icon">
-                                {file.type === 'application/pdf' ? (
-                                    <FileText size={20} />
-                                ) : (
-                                    <ImageIcon size={20} />
-                                )}
-                            </div>
-                            <div className="file-info">
-                                <p className="file-name">{file.name}</p>
-                                <p className="file-size">{formatFileSize(file.size)}</p>
-                            </div>
-                            <div className="file-actions">
-                                <button
-                                    className="file-action-btn"
-                                    onClick={() => setPreviewFile(file)}
-                                    title="Preview"
-                                >
-                                    <Eye size={16} />
-                                </button>
-                                <button
-                                    className="file-action-btn"
-                                    onClick={() => handleDownload(file)}
-                                    title="Download"
-                                >
-                                    <Download size={16} />
-                                </button>
-                                <button
-                                    className="file-action-btn delete"
-                                    onClick={() => handleRemoveFile(file.id)}
-                                    title="Remove"
-                                >
-                                    <X size={16} />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {previewFile && (
-                <div className="file-preview-modal" onClick={() => setPreviewFile(null)}>
-                    <div className="file-preview-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="file-preview-header">
-                            <h3>{previewFile.name}</h3>
-                            <button
-                                className="close-preview-btn"
-                                onClick={() => setPreviewFile(null)}
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+                        Uploaded Files ({files.length})
+                    </Typography>
+                    <List sx={{ bgcolor: 'background.paper', borderRadius: 1 }}>
+                        {files.map((file, index) => (
+                            <ListItem
+                                key={file.id}
+                                divider={index < files.length - 1}
+                                sx={{
+                                    '&:hover': {
+                                        backgroundColor: 'action.hover',
+                                    },
+                                }}
                             >
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <div className="file-preview-body">
-                            {previewFile.type === 'application/pdf' ? (
-                                <iframe
-                                    src={previewFile.data}
-                                    title={previewFile.name}
-                                    width="100%"
-                                    height="100%"
+                                <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
+                                    {file.type === 'application/pdf' ? (
+                                        <FileText size={24} color="#6366F1" />
+                                    ) : (
+                                        <ImageIcon size={24} color="#6366F1" />
+                                    )}
+                                </Box>
+                                <ListItemText
+                                    primary={file.name}
+                                    secondary={formatFileSize(file.size)}
+                                    primaryTypographyProps={{ noWrap: true, fontWeight: 500 }}
+                                    secondaryTypographyProps={{ variant: 'caption' }}
                                 />
-                            ) : (
-                                <img
-                                    src={previewFile.data}
-                                    alt={previewFile.name}
-                                    style={{ maxWidth: '100%', maxHeight: '100%' }}
-                                />
-                            )}
-                        </div>
-                    </div>
-                </div>
+                                <ListItemSecondaryAction>
+                                    <IconButton edge="end" size="small" onClick={() => handleDownload(file)} sx={{ mr: 0.5 }}>
+                                        <Download size={18} />
+                                    </IconButton>
+                                    <IconButton edge="end" size="small" onClick={() => handleRemoveFile(file.id)} color="error">
+                                        <X size={18} />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
             )}
-        </div>
+        </Box>
     );
 };
 
