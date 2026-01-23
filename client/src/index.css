@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #F8FAFC;
+  /* Canvas background - exact spec */
+}
+
+/* Canvas grid pattern - very subtle as specified */
+.canvas-grid-bg {
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Text utilities */
+.text-muted {
+  color: #94A3B8;
+}
+
+/* Remove default button styling */
+button {
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+/* Custom scrollbar matching design system */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 5px;
+  border: 2px solid #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+  /* Muted color */
+}
+
+/* Selection styling */
+::selection {
+  background-color: rgba(99, 102, 241, 0.2);
+  /* Primary with opacity */
+  color: #1E293B;
+}
+
+::-moz-selection {
+  background-color: rgba(99, 102, 241, 0.2);
+  color: #1E293B;
+}
+
+/* Subtle lift animation for cards */
+@keyframes subtleLift {
+  from {
+    transform: translateY(0);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  to {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.card-hover-lift:hover {
+  animation: subtleLift 0.3s ease forwards;
+}
+
+/* Custom Cursor Effects */
+* {
+  cursor: none !important;
+}
+
+.custom-cursor {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(99, 102, 241, 0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+}
+
+.custom-cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.6),
+    0 0 20px rgba(99, 102, 241, 0.4),
+    0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.cursor-trail {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.6), rgba(99, 102, 241, 0.6));
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+}
+
+/* Cursor hover effects for interactive elements */
+button:hover~.custom-cursor,
+a:hover~.custom-cursor,
+[draggable="true"]:hover~.custom-cursor {
+  width: 60px;
+  height: 60px;
+  border-color: rgba(139, 92, 246, 0.6);
+}
