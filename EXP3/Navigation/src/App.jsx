@@ -5,7 +5,7 @@ import './App.css'
 import { BrowserRouter, Routes, Route, Link} from 'react-router-dom'
 function Profile(){
   return (
-    <div>
+    <div className='app-container'>
       <marquee loops="5">
         <h1>Welcome to my Profile</h1>
       </marquee>
@@ -17,20 +17,24 @@ function Profile(){
 }
 function Dashboard(){
   return (
-    <>
+    <div className='app-container'>
     <h1>Skills</h1>
     <h2>HTML</h2>
     <h2>CSS</h2>
-    </>
+    </div>
   )
 }
 function App() {
   return  (
    
    <BrowserRouter>
-     <div>
-   <Link to="/profile"><button>Go to Profile</button></Link>
-   <Link to="/dashboard"><button>Go to Dashboard</button></Link>
+     <div className='app-container'>
+      <h1>Click on a button below</h1>
+      <div className='btn-group'>
+        <Link to="/profile"><button>Go to Profile</button></Link>
+        <Link to="/dashboard"><button>Go to Dashboard</button></Link>
+      </div>
+  
    </div>
     <Routes>
       <Route path='/profile' element={<Profile/>}/>

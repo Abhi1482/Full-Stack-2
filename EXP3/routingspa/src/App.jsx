@@ -3,13 +3,13 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import {BrowserRouter, Routes, Route} from "react-router-dom";
-function home(){
+function Home(){
   return <h1>Home Page</h1>
 }
-function contact(){
+function Contact(){
   return <h1>Contact Page</h1>
 }
-function about(){
+function About(){
   return <h1>About Page</h1>
 }
 function App() {
@@ -19,9 +19,9 @@ function App() {
     <>
     <BrowserRouter>
     <Routes>
-      <Route path='/' element={home()}></Route>
-      <Route path='/contact' element={contact()}></Route>
-      <Route path='/about' element={about()}></Route>
+      <Route path='/' element={<Home/>}></Route>
+      <Route path='/contact' element={<Contact/>}></Route>
+      <Route path='/about' element={<About/>}></Route>
     </Routes>
     </BrowserRouter>
     </>
