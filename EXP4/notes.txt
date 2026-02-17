@@ -1,0 +1,13 @@
+Lazy loading is a performance optimisation technique where components are loaded only when required
+React.lazy and React.Suspence are required to implement lazy loading
+React.lazy allows componenets to load lazy
+React.Suspence provides a fall back ui when the components are loaded lazy
+
+BENIFITS:
+provides an optimisation technique to increase the performance of the website
+improves page load time 
+
+TASK:
+1.Create a react application and create a folder named components in the src folder
+2.Add a component calle dashboard.jsx inside the component folder
+3.Import the dashboard into app.jsx and render it
