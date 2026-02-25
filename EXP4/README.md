@@ -1,18 +1,8 @@
-Experiment 4.1
-<img width="1920" height="916" alt="image" src="https://github.com/user-attachments/assets/f5baf477-9445-4e80-83db-8871891665fa" />
-
-<img width="1920" height="914" alt="image" src="https://github.com/user-attachments/assets/076d274d-b684-47f4-a247-4e04587d86f9" />
-
-<img width="1920" height="920" alt="image" src="https://github.com/user-attachments/assets/835f7494-cf3d-4837-98a3-6debc5c54fb2" />
-
-
-Experiment 4.2
-<img width="1920" height="913" alt="image" src="https://github.com/user-attachments/assets/c6cf491f-13df-477e-9bbb-b7264456348b" />
-
-<img width="1920" height="917" alt="image" src="https://github.com/user-attachments/assets/252afd55-8539-46a3-af7c-a1cb37f7c138" />
-
-
-Experiment 4.3
-<img width="1920" height="917" alt="image" src="https://github.com/user-attachments/assets/a84d2cf8-1500-4e3d-a7ff-d2a8a9092693" />
-
-<img width="1920" height="919" alt="image" src="https://github.com/user-attachments/assets/a23b6762-aef1-4a1d-8791-85d85804527c" />
+<img width="1917" height="903" alt="image" src="https://github.com/user-attachments/assets/23633b09-a71a-4038-b123-c8fb2faef70c" />
+<img width="1917" height="903" alt="image" src="https://github.com/user-attachments/assets/0af84677-a31d-495c-92a1-0463ade1e202" />
+<img width="1919" height="916" alt="image" src="https://github.com/user-attachments/assets/619d757c-d5cc-485c-a62f-5fd5ae2e211d" />
+<img width="1918" height="914" alt="image" src="https://github.com/user-attachments/assets/14b6cbca-68e5-42e5-ade5-e4aee981cbbc" />
+<img width="1919" height="907" alt="image" src="https://github.com/user-attachments/assets/9f4273e5-99cf-49e0-9c38-22a87216cbcc" />
+<img width="1919" height="907" alt="image" src="https://github.com/user-attachments/assets/71f164e9-b22d-4d3e-9758-b79f53b25fbb" />
+<img width="1919" height="909" alt="image" src="https://github.com/user-attachments/assets/fab69b43-b5b8-4238-a34d-b33a9f5231fb" />
+<img width="1919" height="909" alt="image" src="https://github.com/user-attachments/assets/29118ae0-f71f-42fd-9f71-2b1dacbca187" />
