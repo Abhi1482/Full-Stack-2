@@ -1,0 +1,43 @@
+/* Remove default spacing */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* Full screen container */
+.app-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+/* Light Theme */
+.light {
+  background-color: #f4f4f4;
+  color: #000;
+}
+
+/* Dark Theme */
+.dark {
+  background-color: #222;
+  color: #fff;
+}
+
+/* Button Styling (optional but cleaner) */
+button {
+  padding: 8px 16px;
+  margin: 5px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+button:hover {
+  opacity: 0.8;
+}
