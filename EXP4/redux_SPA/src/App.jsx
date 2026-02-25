@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { increment, decrement, reset } from "./store";
+import "./App.css";
 
 function App() {
   const count = useSelector((state) => state.counter.value);
